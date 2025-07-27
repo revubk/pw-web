@@ -1,34 +1,33 @@
-const fs = require('fs');
+const fs = require('fs').promises;
 const path = require('path');
 
 class ResourceLoader {
   constructor() {
-    this.locatorsDir = path.join(__dirname, '../resources/locators');
+    this.locatorsDir = path.resolve(__dirname, '../resources/locators');
     this.pageCache = {};
     this.currentPage = null;
   }
 
-  loadConfig(keyPath) {
-    const rawData = JSON.parse(fs.readFileSync(path.join(__dirname, '../resources/config.json'), 'utf-8'));
+  async loadConfig(keyPath) {
+    const configPath = path.resolve(__dirname, '../resources/config.json');
+    const rawData = JSON.parse(await fs.readFile(configPath, 'utf-8'));
     return keyPath.split('.').reduce((obj, key) => obj[key], rawData);
   }
 
   async discoverPageFiles() {
-    const findPageFiles = (dir) => {
-      const entries = fs.readdirSync(dir, { withFileTypes: true });
+    const findPageFiles = async (dir) => {
+      const entries = await fs.readdir(dir, { withFileTypes: true });
       const files = [];
-
       for (const entry of entries) {
         const fullPath = path.join(dir, entry.name);
         if (entry.isDirectory()) {
-          files.push(...findPageFiles(fullPath));
+          files.push(...await findPageFiles(fullPath));
         } else if (entry.isFile() && entry.name.endsWith('.json')) {
           files.push(fullPath);
         }
       }
       return files;
     };
-
     return findPageFiles(this.locatorsDir);
   }
 
@@ -42,12 +41,16 @@ class ResourceLoader {
     let pageConfig = null;
 
     for (const filePath of pageFiles) {
-      const content = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-      if (content.page === pageName) {
-        pageConfig = content;
-        // Store relative path for debugging
-        pageConfig.__source = path.relative(this.locatorsDir, filePath);
-        break;
+      try {
+        const content = JSON.parse(await fs.readFile(filePath, 'utf-8'));
+        if (content.page === pageName) {
+          pageConfig = content;
+          pageConfig.__source = path.relative(this.locatorsDir, filePath);
+          break;
+        }
+      } catch (err) {
+        // Optionally log or handle file read/parse errors
+        continue;
       }
     }
 
