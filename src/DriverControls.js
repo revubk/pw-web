@@ -32,7 +32,7 @@ async function launchApp() {
 
 async function navigateTo(url) {
   const page = await getPage();
-  console.log("Loaded URL from config-", `PageUrls.${url}`+ ": " + loadConfig(`PageUrls.${url}`));
+  console.log("Loaded URL from config -", `PageUrls.${url}`+ ": " + await loadConfig(`PageUrls.${url}`));
 
   await page.goto(await loadConfig(`PageUrls.${url}`));
   await page.waitForLoadState('domcontentloaded');

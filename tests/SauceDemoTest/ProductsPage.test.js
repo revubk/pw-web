@@ -13,7 +13,7 @@ test.describe.configure({ mode: 'serial' });
 
 test.beforeEach('Login to Product page', async () => {
     await navigateTo('sauceDemo');
-    resources.setPage('saucedemo-login');
+    await resources.setPage('saucedemo-login');
 
     const testData = require('../../resources/SauceDemo_TestData.json');
     await enterTextInto('LoginElements.UserName', testData[0].username);
@@ -21,7 +21,7 @@ test.beforeEach('Login to Product page', async () => {
     await clickOn('LoginElements.LoginButton');
 
     await waitForPageLoad();
-    resources.setPage('saucedemo-product-page');
+    await resources.setPage('saucedemo-product-page');
 });
 
 test.describe('@runTest', () => {

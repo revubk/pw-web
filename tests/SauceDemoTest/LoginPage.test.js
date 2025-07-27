@@ -14,7 +14,7 @@ test.describe('@runTest', () => {
 
     test('Login Page Validations', async () => {
 
-        resources.setPage('saucedemo-login');
+        await resources.setPage('saucedemo-login');
         await validateElementVisible('PageElements.Heading');
         await validateElementVisible('PageElements.LoginDescriptionBox');
         await validateElementVisible('PageElements.LoginUsernameColumn');
@@ -24,7 +24,7 @@ test.describe('@runTest', () => {
 
     test('Login Error Validations', async () => {
 
-        resources.setPage('saucedemo-login');
+        await resources.setPage('saucedemo-login');
         await clickOn('LoginElements.LoginButton');
         await validateElementVisible('Errors.errorIconUsername');
         await validateElementVisible('Errors.errorIconPassword');
@@ -57,13 +57,13 @@ test.describe('@runTest', () => {
         
         for (const { username, password } of testData) {
 
-            resources.setPage('saucedemo-login');
+            await resources.setPage('saucedemo-login');
             await enterTextInto('LoginElements.UserName', username);
             await enterTextInto('LoginElements.PassWord', password);
             await clickOn('LoginElements.LoginButton');
 
             await waitForPageLoad();
-            resources.setPage('saucedemo-product-page');
+            await resources.setPage('saucedemo-product-page');
             await elementToHaveText('Header.Title', "Swag Labs");
             await clickOn('Header.HamburgerIcon');
             await clickOn('Hamburger.Logout');
